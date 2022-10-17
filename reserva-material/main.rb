@@ -35,11 +35,12 @@ class Api < Sinatra::Base
     
     def initialize
       super
-      ubicaciones = ['Amsterdam', 'Barcelona', 'Bogotá', 'Lima', 'Montevideo'].shuffle
-      proveedores = ['B-Cycle', 'Amazon', 'Recycle company', 'Eco recycle', 'Reciclar SA'].shuffle
+      ubicaciones = ['Estados Unidos - Chicago', 'España - Barcelona', 'Colombia - Bogotá', 'Perú - Lima', 'Uruguay - Montevideo']
+      proveedores = ['B-Cycle', 'Amazon', 'Recycle company', 'Eco recycle', 'Reciclar SA']
+      coordenadas = [[41.8443535947532, -87.75115600228746], [41.31472243655048, 2.0814067069359576], [4.67222501691664, -74.10642898351165], [-12.068907651606178, -77.07086384139262], [-34.851229958045046, -56.21378540926756]]
       @proveedores = []
       for i in 0...5 do
-        @proveedores.push({ id: rand(9999), name: proveedores[i], ubicacion: ubicaciones[i] }) 
+        @proveedores.push({ id: 1000+i, proveedor: proveedores[i], ubicacion: ubicaciones[i], coordenadas: coordenadas[i] }) 
       end
     end
     
@@ -63,12 +64,12 @@ class Api < Sinatra::Base
       #Algunas variables
       arr = []
       precio = rand(500..9999)
-
       cant = rand(1..5) #Cantidad de proveedores a retornar
       if caso != 1
         fecha = fecha.next_day(rand 1..15)
       end
       arr.push({ fecha: fecha, material: material, cantidad: cantidad })
+      @proveedores.shuffle!
       for i in 0...cant do
           proveedor = @proveedores[i]
           proveedor['precio'] = (precio + rand(-150..150)).to_s + 'U$D'
