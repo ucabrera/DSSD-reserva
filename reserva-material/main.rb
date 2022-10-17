@@ -5,18 +5,17 @@ require 'date'
 
 class JwtAuth
 
-    def initialize app
-      @app = app
-    end
+  def initialize app
+    @app = app
+  end
   
-    def call env
-      begin
-        options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-        bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-        payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options 
-        env[:user] = payload['user']
-  
-        @app.call env
+  def call env
+    begin
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options 
+      env[:user] = payload['user']
+      @app.call env
       rescue JWT::ExpiredSignature
         [403, { 'Content-Type' => 'text/plain' }, ['El token expiró.']]
       rescue JWT::InvalidIssuerError
@@ -24,7 +23,7 @@ class JwtAuth
       rescue JWT::InvalidIatError
         [403, { 'Content-Type' => 'text/plain' }, ['El token no tiene un tiempo de emisión válido.']]
       rescue JWT::DecodeError
-        [401, { 'Content-Type' => 'text/plain' }, ['Se tiene que enviar un token.']]
+        [401, { 'Content-Type' => 'text/plain' }, ['El token no es válido.']]
       end
     end
   
@@ -36,44 +35,44 @@ class Api < Sinatra::Base
     
     def initialize
       super
-      @locations = ['Amsterdam', 'Paris', 'Barcelona', 'Bogotá', 'Lima', 'Londres', 'Montevideo', 'Kioto', 'Seúl', 'El Cairo', 'Dakar']
+      ubicaciones = ['Amsterdam', 'Barcelona', 'Bogotá', 'Lima', 'Montevideo'].shuffle
+      proveedores = ['B-Cycle', 'Amazon', 'Recycle company', 'Eco recycle', 'Reciclar SA'].shuffle
+      @proveedores = []
+      for i in 0...5 do
+        @proveedores.push({ id: rand(9999), name: proveedores[i], ubicacion: ubicaciones[i] }) 
+      end
     end
     
     post '/search' do
-      for_date = params[:for_date]
-      quantity = params[:quantity].to_i
-      name = params[:name]
+      #Obetener los parámetros
+      fecha = params[:fecha]
+      cantidad = params[:cantidad].to_i
+      material = params[:material]
       caso = params[:caso].to_i
-      if name.nil? || for_date.nil? || quantity.nil?
-        return 'Uso incorrecto de la API, leer la documentacion en: URL no hay URL'
+      #Chequear los parámetros
+      if material.nil? || fecha.nil? || cantidad.nil?
+        return 'Uso incorrecto de la API, leer la documentacion en: https://github.com/ucabrera/DSSD-reserva/tree/main/reserva-material '
       end
-      for_date = Date.strptime(for_date, '%d-%m-%Y')
-      if quantity < 1
+      fecha = Date.strptime(fecha, '%d-%m-%Y')
+      if cantidad < 1
         return 'La cantidad de material debe ser un número positivo'
       end
-      if for_date < Date.today
+      if fecha < Date.today
         return 'La fecha debe ser mayor al día de hoy'       
       end
+      #Algunas variables
       arr = []
-      locaciones = @locations.sample(6)
-      precio = rand(9999)
-      case caso
-      when 1 #Quiero que haya material para la fecha solicitada en la cantidad solicitada
-        arr.push({ fecha: for_date, material: name, cantidad: quantity })
-        arr.push({ id: rand(9999), ubicacion: @locations.sample, precio: precio.to_s + 'U$D'})
-      when 2 #Quiero que haya varios provedores  
-        cantidad = rand(2..5)
-        arr.push({ fecha: for_date, material: name, cantidad: quantity })
-        for i in 0...cantidad do
-          arr.push({ id: rand(9999), ubicacion: locaciones[i], precio: (precio + rand(-100..100)).to_s + 'U$D'})
-        end
-      else #Quiero que no haya materiales para esa fecha y envié n, mas cercanas a esa fecha
-        cantidad = rand 2..5
-        days = rand 2..10
-        arr.push({ fecha: for_date.next_day(days), material: name, cantidad: quantity })
-        for i in 0...cantidad do
-          arr.push({ id: rand(9999), ubicacion: locaciones[i], precio: (precio + rand(-100..100)).to_s + 'U$D'})
-        end
+      precio = rand(500..9999)
+
+      cant = rand(1..5) #Cantidad de proveedores a retornar
+      if caso != 1
+        fecha = fecha.next_day(rand 1..15)
+      end
+      arr.push({ fecha: fecha, material: material, cantidad: cantidad })
+      for i in 0...cant do
+          proveedor = @proveedores[i]
+          proveedor['precio'] = (precio + rand(-150..150)).to_s + 'U$D'
+          arr.push(proveedor)
       end
       arr.to_json
     end
@@ -103,7 +102,7 @@ class Api < Sinatra::Base
     end
 
     not_found do
-      'Uso incorrecto de la API, ingresa en: URL para ver la documentación'
+      'Uso incorrecto de la API, ingresa en: https://github.com/ucabrera/DSSD-reserva/tree/main/reserva-material para ver la documentación'
     end
   
   end
@@ -112,10 +111,6 @@ class Api < Sinatra::Base
   
     def initialize
       super
-  
-      @logins = {
-        "susana.garcia": 'bpm'
-      }
     end
 
     post '/login' do
@@ -124,7 +119,7 @@ class Api < Sinatra::Base
       if username.nil? || password.nil?
         'No se envió el usuario o la contraseña'  
       else  
-        if @logins[username.to_sym] == password
+        if username == 'wwglasses' && password == 'wwglasses'
           content_type :json
           { token: token(username) }.to_json
         else

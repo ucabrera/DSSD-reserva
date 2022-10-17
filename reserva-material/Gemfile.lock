@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     daemons (1.4.1)
+    dotenv (2.8.1)
     eventmachine (1.2.7)
     foreman (0.87.2)
     json (2.6.2)
@@ -27,6 +28,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  dotenv
   foreman
   json
   jwt

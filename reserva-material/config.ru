@@ -1,3 +1,4 @@
+require 'dotenv/load'
 require File.expand_path '../main.rb', __FILE__
 
 run Rack::URLMap.new({
