@@ -36,49 +36,46 @@ class Api < Sinatra::Base
     
     def initialize
       super
-      @locations = ['Amsterdam', 'Paris', 'Barcelona', 'Bogotá', 'Lima', 'Londres', 'Montevideo', 'Kioto', 'Seúl', 'El Cairo', 'Dakar']
+      espacios = ['Francia - París', 'Japón - Kioto', 'Brasil - San Pablo', 'Egipto - El Cairo', 'Senegal - Dakar']
+      @ubicaciones = []
+      for i in 0...5 do
+        @ubicaciones.push({ id: 2000 + i, ubicacion: espacios[i] }) 
+      end
     end
     
     post '/search' do
-      start_date = params[:start_date]
-      days = params[:days]
+      fecha = params[:fecha]
+      dias = params[:dias]
       caso = params[:caso].to_i
-      if start_date.nil? && days.nil?
+      if fecha.nil? && dias.nil?
         return 'No se envió la fecha a buscar y la cantidad de días'
       end
-      if start_date.nil?
+      if fecha.nil?
         return 'No se envió la fecha a buscar'
       end
-      if days.nil?
+      if dias.nil?
         return 'No se envió la cantidad de días'
       end
-      days = params[:days].to_i
-      start_date = Date.strptime(start_date, '%d-%m-%Y')
-      if days < 1
+      dias = params[:dias].to_i
+      fecha = Date.strptime(fecha, '%d-%m-%Y')
+      if dias < 1
         return 'La cantidad de días debe ser un número positivo'
       end
-      if start_date < Date.today
+      if fecha < Date.today
         return 'La fecha a buscar debe ser mayor al día de hoy'       
       end
       arr = []
-      locaciones = @locations.sample(6)
-      case caso
-      when 1 #Quiero una sola locación para esa fecha
-        arr.push({ fecha: start_date })
-        arr.push({ id: rand(9999), ubicacion: @locations.sample})
-      when 2 #Quiero n locaciones, n > 1, para esa fecha
-        cantidad = rand(2..5)
-        arr.push({ fecha: start_date })
-        for i in 0...cantidad do
-          arr.push({ id: rand(9999), ubicacion: locaciones[i]})
-        end
-      else #Quiero que no haya locaciones para esa fecha y envié n locaciones, mas cercanas a esa fecha
-        cantidad = rand 2..5
-        days = rand 2..30
-        arr.push({ fecha: start_date.next_day(days) })
-        for i in 0...cantidad do
-          arr.push({ id: rand(9999), ubicacion: locaciones[i]})
-        end
+      if caso != 1 
+        fecha = fecha.next_day(rand 2..30)
+      end
+      arr.push({ fecha: fecha })
+      cant = rand(1..5)
+      costo = dias * 85 + 1000 + (rand 10000)
+      @ubicaciones.shuffle!
+      for i in 0...cant do
+        ubicacion = @ubicaciones[i]
+        ubicacion['costo'] = (costo + rand(-250..250)).to_s + 'U$D'
+        arr.push(ubicacion)
       end
       arr.to_json
     end
@@ -117,10 +114,6 @@ class Api < Sinatra::Base
   
     def initialize
       super
-  
-      @logins = {
-        "susana.garcia": 'bpm'
-      }
     end
 
     post '/login' do
@@ -129,7 +122,7 @@ class Api < Sinatra::Base
       if username.nil? || password.nil?
         'No se envió el usuario o la contraseña'  
       else  
-        if @logins[username.to_sym] == password
+        if username == 'wwglasses' && password == 'wwglasses'
           content_type :json
           { token: token(username) }.to_json
         else
@@ -150,7 +143,7 @@ class Api < Sinatra::Base
     
     def payload username
       {
-        exp: Time.now.to_i + 1200,
+        exp: Time.now.to_i + 1600,
         iat: Time.now.to_i,
         iss: ENV['JWT_ISSUER'],
         user: {
