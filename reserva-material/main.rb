@@ -66,13 +66,13 @@ class Api < Sinatra::Base
       precio = rand(500..9999)
       cant = rand(1..5) #Cantidad de proveedores a retornar
       if caso != 1
-        fecha = fecha.next_day(rand 1..15)
+        fecha = fecha.next_day(rand 1..10)
       end
       arr.push({ fecha: fecha, material: material, cantidad: cantidad })
       @proveedores.shuffle!
       for i in 0...cant do
           proveedor = @proveedores[i]
-          proveedor['precio'] = (precio + rand(-150..150)).to_s + 'U$D'
+          proveedor['precio'] = (precio + rand(-250..250)).to_s + 'U$D'
           arr.push(proveedor)
       end
       arr.to_json
@@ -141,7 +141,7 @@ class Api < Sinatra::Base
     
     def payload username
       {
-        exp: Time.now.to_i + 7500,
+        exp: Time.now.to_i + 1600,
         iat: Time.now.to_i,
         iss: ENV['JWT_ISSUER'],
         user: {
