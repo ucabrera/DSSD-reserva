@@ -105,7 +105,7 @@ class Api < Sinatra::Base
     end
 
     not_found do
-      'Uso incorrecto de la API, ingresa en: URL para ver la documentación'
+      'Uso incorrecto de la API, ingresa en: https://github.com/ucabrera/DSSD-reserva/tree/main/reserva-espacio para ver la documentación'
     end
   
   end
@@ -132,7 +132,7 @@ class Api < Sinatra::Base
     end
   
     not_found do
-      'Uso incorrecto de la API, ingresa en: URL para ver la documentación'
+      'Uso incorrecto de la API, ingresa en: https://github.com/ucabrera/DSSD-reserva para ver la documentación'
     end
   
     private

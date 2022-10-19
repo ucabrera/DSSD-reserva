@@ -8,7 +8,7 @@
 
 # Reserva de materiales
 
-## URL en fly.io: https://fly.io/apps/reserva-material
+## URL en fly.io: https://reserva-material.fly.dev
 
 ### Endpoints: 
 
@@ -50,7 +50,6 @@ https://reserva-material.fly.dev/api/search?fecha=30-11-2022&cantidad=100&materi
 
 **Parámetros:**
 
-Obligatorios:
 - id(integer): Debe ser mayor a 0.
 
 ### Ejemplos de uso:
@@ -58,11 +57,10 @@ https://reserva-material.fly.dev/api/reserve?id=47587
 
 ![Uso de /api/reserve](./capturas/captura-reserve?raw=true)
 
-**POST /api/cancel** - Simula la cancela de una reserva de material. Necesita el token en un header Authorization y 1 paramétro obligatorio.
+**POST /api/cancel** - Simula la cancelación de una reserva de material. Necesita el token en un header Authorization y 1 paramétro obligatorio.
 
 **Parámetros:**
 
-Obligatorios:
 - id(integer): Debe ser mayor a 0.
 
 ### Ejemplos de uso:
