@@ -72,7 +72,7 @@ class Api < Sinatra::Base
       @proveedores.shuffle!
       for i in 0...cant do
           proveedor = @proveedores[i]
-          proveedor['precio'] = (precio + rand(-250..250)).to_s + 'U$D'
+          proveedor['precio'] = (precio + rand(-250..250)).to_s + 'US$'
           arr.push(proveedor)
       end
       arr.to_json

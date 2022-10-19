@@ -74,7 +74,7 @@ class Api < Sinatra::Base
       @ubicaciones.shuffle!
       for i in 0...cant do
         ubicacion = @ubicaciones[i]
-        ubicacion['costo'] = (costo + rand(-250..250)).to_s + 'U$D'
+        ubicacion['costo'] = (costo + rand(-250..250)).to_s + 'US$'
         arr.push(ubicacion)
       end
       arr.to_json
