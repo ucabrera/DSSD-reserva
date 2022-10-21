@@ -84,7 +84,7 @@ class Api < Sinatra::Base
         return 'No se envió el id de la reserva'
       end
       id = id.to_i
-      if id < 1
+      if id < 1000
         return 'No se puede realizar una reserva con ese id'
       end
       "Se realizó la reserva con identificador: #{id}"  
@@ -96,7 +96,7 @@ class Api < Sinatra::Base
         return 'No se envió el id de la reserva a cancelar'
       end
       id = id.to_i
-      if id < 1
+      if id < 1000
         return 'No existe una reserva para ese id'
       end
       "Se canceló la reserva con identificador: #{id}"  
@@ -127,6 +127,10 @@ class Api < Sinatra::Base
           [401, { 'Content-Type' => 'text/plain' }, 'Usuario o contraseña no válidos.']
         end
       end
+    end
+
+    get '/' do
+      redirect '/index.html'
     end
   
     not_found do

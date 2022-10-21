@@ -1,0 +1,247 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "WWG - Gestión de espacios de fabricación - OpenAPI 3.0",
+    "description": "Este es un servidor de consulta y reserva de espacios de fabricación para el diseño y confección de lentes producido por la empresa World Wide Glasses, proyecto provisto por la cátedra de Desarrollo de Software en Sistemas Distribuidos, basado en la especificación OpenAPI 3.0.",
+    "contact": {
+      "name": "Contacta al desarrollador",
+      "url": "https://github.com/ucabrera/DSSD-reserva"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/MilagrosRucci/WWG-ReservationSpaceServer/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    },
+    {
+      "url": "https://reserva-espacio.fly.dev",
+      "description": "API - Gestión de espacios de fabricación"
+    }
+  ],
+  "tags": [
+    {
+      "name": "manufacturing spaces reservation",
+      "description": "Reserva de espacios de fabricación"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "manufacturing spaces reservation"
+        ],
+        "summary": "Autenticación del usuario",
+        "description": "Al pasar los parámetros apropiados, puede obtener el token de autenticación requerido para acceder a las reservas.\n",
+        "operationId": "manufacturingSpacesUserLogin",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "Ingresar el nombre del usuario",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "Ingresar la contraseña del usuario",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Autenticación válida del usuario.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Login"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuario o contraseña no válidos."
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "post": {
+        "tags": [
+          "manufacturing spaces reservation"
+        ],
+        "summary": "Búsqueda de espacios de fabricación",
+        "description": "Se realiza la búsqueda de espacios de fabricación para la producción de lentes, según los parámetros establecidos. \n",
+        "operationId": "manufacturingSpacesSearchId",
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "description": "Fecha en la que se desea producir",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dias",
+            "in": "query",
+            "description": "Cantidad de días que llevará la producción",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Búsqueda realizada con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchManufacturingSpaces"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reserve": {
+      "post": {
+        "tags": [
+          "manufacturing spaces reservation"
+        ],
+        "summary": "Reserva de espacios de fabricación",
+        "description": "Efectiviza la reserva de espacios de fabricación al proveedor/reciclador indicado. \n",
+        "operationId": "manufacturingSpacesReservationId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Identificador de la consulta de espacios de fabricación",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reserva realizada con éxito."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/cancel": {
+      "post": {
+        "tags": [
+          "manufacturing spaces reservation"
+        ],
+        "summary": "Cancelación de reserva de espacios de fabricación",
+        "description": "Cancela la reserva de espacios de fabricación efectivizada al proveedor/reciclador indicado. \n",
+        "operationId": "cancelManufacturingSpacesReservationId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Identificador de la reserva de espacios de fabricación",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancelación realizada con éxito."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Login": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SearchManufacturingSpaces": {
+        "required": [
+          "caso",
+          "dias",
+          "fecha"
+        ],
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "example": "0036-04-13"
+          },
+          "dias": {
+            "type": "integer",
+            "example": 30
+          },
+          "caso": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
