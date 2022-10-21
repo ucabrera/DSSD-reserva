@@ -108,6 +108,17 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "caso",
+            "in": "query",
+            "description": "Escenario para la demo",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
