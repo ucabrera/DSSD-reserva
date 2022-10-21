@@ -99,7 +99,7 @@
             }
           },
           {
-            "name": "días",
+            "name": "dias",
             "in": "query",
             "description": "Cantidad de días que llevará la producción",
             "required": true,
