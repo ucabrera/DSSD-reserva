@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "WWG - Gestión de espacios de fabricación - OpenAPI 3.0",
-    "description": "Este es un servidor de consulta y reserva de espacios de fabricación para el diseño y confección de lentes producido por la empresa World Wide Glasses, proyecto provisto por la cátedra de Desarrollo de Software en Sistemas Distribuidos, basado en la especificación OpenAPI 3.0.",
+    "title": "WWG - Gestión de materiales - OpenAPI 3.0",
+    "description": "Este es un servidor de consulta y reserva de materiales para el diseño y confección de lentes producido por la empresa World Wide Glasses, proyecto provisto por la cátedra de Desarrollo de Software en Sistemas Distribuidos, basado en la especificación OpenAPI 3.0.",
     "contact": {
       "name": "Contacta al desarrollador",
       "url": "https://github.com/ucabrera/DSSD-reserva"
@@ -11,29 +11,29 @@
   },
   "servers": [
     {
-      "url": "https://virtserver.swaggerhub.com/MilagrosRucci/WWG-ReservationSpaceServer/1.0.0",
-      "description": "SwaggerHub API Auto Mocking"
+      "url": "https://reserva-material.fly.dev",
+      "description": "API - Gestión de materiales"
     },
     {
-      "url": "https://reserva-espacio.fly.dev",
-      "description": "API - Gestión de espacios de fabricación"
+      "url": "https://virtserver.swaggerhub.com/MilagrosRucci/WWG-ReservationServer/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
     }
   ],
   "tags": [
     {
-      "name": "manufacturing spaces reservation",
-      "description": "Reserva de espacios de fabricación"
+      "name": "materials reservation",
+      "description": "Reserva de materiales"
     }
   ],
   "paths": {
     "/login": {
       "post": {
         "tags": [
-          "manufacturing spaces reservation"
+          "materials reservation"
         ],
         "summary": "Autenticación del usuario",
         "description": "Al pasar los parámetros apropiados, puede obtener el token de autenticación requerido para acceder a las reservas.\n",
-        "operationId": "manufacturingSpacesUserLogin",
+        "operationId": "materialsUserLogin",
         "parameters": [
           {
             "name": "username",
@@ -79,13 +79,13 @@
       }
     },
     "/api/search": {
-      "post": {
+      "get": {
         "tags": [
-          "manufacturing spaces reservation"
+          "materials reservation"
         ],
-        "summary": "Búsqueda de espacios de fabricación",
-        "description": "Se realiza la búsqueda de espacios de fabricación para la producción de lentes, según los parámetros establecidos. \n",
-        "operationId": "manufacturingSpacesSearchId",
+        "summary": "Búsqueda de materiales",
+        "description": "Se realiza la búsqueda de proveedores de materiales para la fabricación de lentes, según los parámetros establecidos. \n",
+        "operationId": "materialsSearchId",
         "parameters": [
           {
             "name": "fecha",
@@ -99,10 +99,32 @@
             }
           },
           {
-            "name": "dias",
+            "name": "cantidad",
             "in": "query",
-            "description": "Cantidad de días que llevará la producción",
+            "description": "Cantidad de material que se necesitará",
             "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "material",
+            "in": "query",
+            "description": "Material que se consultará",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "caso",
+            "in": "query",
+            "description": "Escenario para la demo",
+            "required": false,
             "style": "form",
             "explode": true,
             "schema": {
@@ -118,7 +140,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SearchManufacturingSpaces"
+                    "$ref": "#/components/schemas/SearchMaterials"
                   }
                 }
               }
@@ -135,16 +157,16 @@
     "/api/reserve": {
       "post": {
         "tags": [
-          "manufacturing spaces reservation"
+          "materials reservation"
         ],
-        "summary": "Reserva de espacios de fabricación",
-        "description": "Efectiviza la reserva de espacios de fabricación al proveedor/reciclador indicado. \n",
-        "operationId": "manufacturingSpacesReservationId",
+        "summary": "Reserva de materiales",
+        "description": "Efectiviza la reserva de materiales al proveedor/reciclador indicado. \n",
+        "operationId": "materialsReservationId",
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Identificador de la consulta de espacios de fabricación",
+            "description": "Identificador de la consulta de materiales",
             "required": true,
             "style": "form",
             "explode": true,
@@ -166,18 +188,18 @@
       }
     },
     "/api/cancel": {
-      "post": {
+      "delete": {
         "tags": [
-          "manufacturing spaces reservation"
+          "materials reservation"
         ],
-        "summary": "Cancelación de reserva de espacios de fabricación",
-        "description": "Cancela la reserva de espacios de fabricación efectivizada al proveedor/reciclador indicado. \n",
-        "operationId": "cancelManufacturingSpacesReservationId",
+        "summary": "Cancelación de reserva de materiales",
+        "description": "Cancela la reserva de materiales efectivizada al proveedor/reciclador indicado. \n",
+        "operationId": "cancelMaterialsReservationId",
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Identificador de la reserva de espacios de fabricación",
+            "description": "Identificador de la reserva de materiales",
             "required": true,
             "style": "form",
             "explode": true,
@@ -213,25 +235,34 @@
           }
         }
       },
-      "SearchManufacturingSpaces": {
+      "SearchMaterials": {
         "required": [
-          "caso",
-          "dias",
-          "fecha"
+          "coordenadas",
+          "id",
+          "precio",
+          "proveedor",
+          "ubicación"
         ],
         "properties": {
-          "fecha": {
+          "id": {
+            "type": "integer",
+            "example": 1004
+          },
+          "proveedor": {
             "type": "string",
-            "format": "date",
-            "example": "0036-04-13"
+            "example": "Reciclar SA"
           },
-          "dias": {
-            "type": "integer",
-            "example": 30
+          "ubicacion": {
+            "type": "string",
+            "example": "Uruguay - Montevideo"
           },
-          "caso": {
-            "type": "integer",
-            "example": 1
+          "coordenadas": {
+            "type": "string",
+            "example": "[-34.851229958045046,-56.21378540926756]"
+          },
+          "precio": {
+            "type": "string",
+            "example": "8145US$"
           }
         }
       }
